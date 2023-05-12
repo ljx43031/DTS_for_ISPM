@@ -104,43 +104,43 @@ for j in range(data_number):
     if j <= data_number - 29:
         obser_t = my_obser_n_all[j:j+29,:]
         
-        #----------------------------------------------------------------------
-        #输入数据前期处理第一种方式：直接含噪输入
-        my_xin_x = np.cos(obser_t[:,0])*obser_t[:,1]
-        my_xin_y = np.sin(obser_t[:,0])*obser_t[:,1]  
-        my_xin_n = np.stack([my_xin_x,my_xin_y],axis=1)
-        x_in_xy = Variable(torch.from_numpy(my_xin_n)).cuda().float()
-        x_in_xy = x_in_xy.unsqueeze(0)
-        
         # #----------------------------------------------------------------------
-        # #含噪数据处理第二种方式：x y网络滤波
-        # my_xin = np.cos(obser_t[:,0])*obser_t[:,1]            #模型参数：FN_LTC_sp_x
-        # data_in = [my_xin,]
-        # data_in.append(sn.filtfilt(b1, a1, my_xin))
-        # data_in.append(sn.filtfilt(b2, a2, my_xin))
-        # data_in.append(sn.filtfilt(b3, a3, my_xin))
-        # data_in.append(sn.filtfilt(b4, a4, my_xin))
-        # data_in.append(sn.filtfilt(b5, a5, my_xin))
-        # data_in = np.asarray(data_in)
-        # data_in_x = data_in.transpose(1,0)
-        # my_xin = np.sin(obser_t[:,0])*obser_t[:,1]            #模型参数：FN_LTC_sp_y
-        # data_in = [my_xin,]
-        # data_in.append(sn.filtfilt(b1, a1, my_xin))
-        # data_in.append(sn.filtfilt(b2, a2, my_xin))
-        # data_in.append(sn.filtfilt(b3, a3, my_xin))
-        # data_in.append(sn.filtfilt(b4, a4, my_xin))
-        # data_in.append(sn.filtfilt(b5, a5, my_xin))
-        # data_in = np.asarray(data_in)
-        # data_in_y = data_in.transpose(1,0)
-        # #网络降噪：x y
-        # x_test = np.expand_dims(data_in_x, 1)
-        # x_in = Variable(torch.from_numpy(x_test)).cuda().float()
-        # filter_out_x = FNx(x_in)
-        # x_test = np.expand_dims(data_in_y, 1)
-        # x_in = Variable(torch.from_numpy(x_test)).cuda().float()
-        # filter_out_y = FNy(x_in)
-        # x_in_xy = torch.stack([filter_out_x[:,:,0], filter_out_y[:,:,0]],dim=2)
-        # x_in_xy = x_in_xy.transpose(1,0)   #timestep和batch互换
+        # #输入数据前期处理第一种方式：直接含噪输入
+        # my_xin_x = np.cos(obser_t[:,0])*obser_t[:,1]
+        # my_xin_y = np.sin(obser_t[:,0])*obser_t[:,1]  
+        # my_xin_n = np.stack([my_xin_x,my_xin_y],axis=1)
+        # x_in_xy = Variable(torch.from_numpy(my_xin_n)).cuda().float()
+        # x_in_xy = x_in_xy.unsqueeze(0)
+        
+        #----------------------------------------------------------------------
+        #含噪数据处理第二种方式：x y网络滤波
+        my_xin = np.cos(obser_t[:,0])*obser_t[:,1]            #模型参数：FN_LTC_sp_x
+        data_in = [my_xin,]
+        data_in.append(sn.filtfilt(b1, a1, my_xin))
+        data_in.append(sn.filtfilt(b2, a2, my_xin))
+        data_in.append(sn.filtfilt(b3, a3, my_xin))
+        data_in.append(sn.filtfilt(b4, a4, my_xin))
+        data_in.append(sn.filtfilt(b5, a5, my_xin))
+        data_in = np.asarray(data_in)
+        data_in_x = data_in.transpose(1,0)
+        my_xin = np.sin(obser_t[:,0])*obser_t[:,1]            #模型参数：FN_LTC_sp_y
+        data_in = [my_xin,]
+        data_in.append(sn.filtfilt(b1, a1, my_xin))
+        data_in.append(sn.filtfilt(b2, a2, my_xin))
+        data_in.append(sn.filtfilt(b3, a3, my_xin))
+        data_in.append(sn.filtfilt(b4, a4, my_xin))
+        data_in.append(sn.filtfilt(b5, a5, my_xin))
+        data_in = np.asarray(data_in)
+        data_in_y = data_in.transpose(1,0)
+        #网络降噪：x y
+        x_test = np.expand_dims(data_in_x, 1)
+        x_in = Variable(torch.from_numpy(x_test)).cuda().float()
+        filter_out_x = FNx(x_in)
+        x_test = np.expand_dims(data_in_y, 1)
+        x_in = Variable(torch.from_numpy(x_test)).cuda().float()
+        filter_out_y = FNy(x_in)
+        x_in_xy = torch.stack([filter_out_x[:,:,0], filter_out_y[:,:,0]],dim=2)
+        x_in_xy = x_in_xy.transpose(1,0)   #timestep和batch互换
         
         #F预测
         TM_p = PII_P1(x_in_xy)
